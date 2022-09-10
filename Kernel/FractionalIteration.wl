@@ -2,17 +2,21 @@
 
 (* :Title: Fractional Iteration                *)
 (* :Name: DanielGeisler/FractionalIteration`   *)
-(* :Author: Daniel Geisler, Dec 2022.          *)
+(* :Author: Daniel Geisler, Sept 2022.         *)
 (* :Summary:                                   *)
 (* :Context: FractionalIteration`              *)
 (* :Package Version: 0.1.3                     *)
 (* :Copyright: Copyright 2022, Daniel Geisler. *)
 (* :Mathematica Version: 13.1                  *)
 
+(* NOTE: the software maxes out at to the fourth derivitive due to the   *)
+(* limitations of the rules. The rule engine needs to be replaced by one *)
+(* based on Faa Di Bruno's formula                                       *)
+
 BeginPackage["FractionalIteration`"]
 (*Off[General::"spell1"];*)
 
-(* Bad sign; the Mathematica code is likely implemented in an inefficient manner. *)  
+(* Bad sign; the Mathematica code is implemented in an ineffictive manner. *)  
 (*$RecursionLimit=Infinity;*)  
 
 (* User functions *)
@@ -103,11 +107,11 @@ Format[d[i_]]:=Subscript[$function,i];
                 /. g[$z] -> $z 
                 /. Derivative[m_][g][$z] :> dyne[m] /. $n -> $n-1 
                 /. Derivative[m_][$f][$z] -> d[m]
-    ];
+    ];    
 
   (* These rules are probably why $RecursionLimit=Infinity must be used *)
   (* They are the combinatoric analogs of multiplying nested summations  *)
-  (* together and raising them to an integer power. *)     
+  (* together and raising them to an integer power. *) 
   dyn /: dyn[{a_,b__}]^q_ := dyn[Join[{a},Table[b,{j,q}]]] /; a == $derivative; 
   dyn /: dyn[{a_,b__}]^q_ := dyn[Table[{a,b},{j,q}]] /; a != $derivative;   
   dyn /: dyn[{a_,b__}]*dyn[{a_,c__}] := dyn[{a,b,c}] /; a == $derivative;
@@ -210,7 +214,8 @@ Format[d[i_]]:=Subscript[$function,i];
         Module[{},
            ReleaseHold[GenericIteration[f, n, z, p, max, Classification->Parabolic]/.f'[p]^(__)->1]
         ];
-   NeutralIteration[i_] := NeutralIteration[i] = ParabolicIteration[i] /. n -> Mod[n,j];
+   IrrationalIteration[f_, n_, z_, p_, max_Integer ,opts___] := 
+         IrrationalIteration[i] = HyperbolicIteration[f, n, z, p, max ,opts] /. n -> Mod[n,j];
    sup[x_] := Module[{position=1,y},
          y = x /. a_Integer :> k[a,position++];
          KroneckerDelta[(First[First[y]]*$n-Plus @@ (First /@ Flatten[y])-
