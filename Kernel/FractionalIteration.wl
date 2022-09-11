@@ -194,17 +194,16 @@ Format[d[i_]]:=Subscript[$function,i];
         ];          
       ,{$derivative,2,max}
       ];
-	  s=$p+Sum[1/$derivative!*Dyne[$derivative]*($z-$p)^$derivative,{$derivative,1,max}];
-	  (*If[classification==Parabolic,s=Activate[(s /.((f'[p]^__)->1))] ,s];*)
+    s=$p+Sum[1/$derivative!*Dyne[$derivative]*($z-$p)^$derivative,{$derivative,1,max}];
+    (*If[classification==Parabolic,s=Activate[(s /.((f'[p]^__)->1))] ,s];*)
       Switch[classification,
          Hyperbolic, s=Activate[s],
-	     Parabolic, s=Activate[(s /.(($function'[$p]^__)->1))],
-	     Generic, s=(s /. Inactive->HoldForm),
-	     _, s=(s /. Inactive->HoldForm)
-	  ];
-	  s
+       Parabolic, s=Activate[(s /.(($function'[$p]^__)->1))],
+       Generic, s=(s /. Inactive->HoldForm),
+       _, s=(s /. Inactive->HoldForm)
     ];
-    
+    s
+    ];    
 
    HyperbolicIteration[f_, n_, z_, p_, max_Integer:4 ,opts___] := 
         Module[{},
@@ -295,4 +294,3 @@ N[u^v]
 End[]
 
 EndPackage[]
-
