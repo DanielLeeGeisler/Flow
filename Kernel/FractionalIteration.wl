@@ -5,7 +5,7 @@
 (* :Author: Daniel Geisler, Sept 2022.         *)
 (* :Summary:                                   *)
 (* :Context: FractionalIteration`              *)
-(* :Package Version: 0.1.3                     *)
+(* :Package Version: 0.2.0                     *)
 (* :Copyright: Copyright 2022, Daniel Geisler. *)
 (* :Mathematica Version: 13.1                  *)
 
@@ -21,10 +21,13 @@ BeginPackage["FractionalIteration`"]
 
 (* User functions *)
 (*FractionalIteration::usage = "FractionalIteration"*)
-GenericIteration::usage = "GenericIteration[function, time variable, space variable, fixed point, derivatives computed, options]; example GenericIteration[f, n, z, p, size, Verbose\[Rule]True]. Computes the continuous iteration of f at fixed point p."
+FractionalIteration::usage = "FractionalIteration[function, time variable, space variable, fixed point, derivatives computed, options]; example FractionalIteration[f, n, z, p, size, Verbose\[Rule]True]. Computes the continuous iteration of f at fixed point p."
+
+GenericIteration::usage = ""
 HyperbolicIteration::usage = "HyperbolicIteration[function, time variable, space variable, fixed point, derivatives computed, options] defined by Sch\[ODoubleDot]der's Functional Equation"
 ParabolicIteration::usage = "ParabolicIteration[function, time variable, space variable, fixed point, derivatives computed, options] defined by Abel's Functional Equation"
 SuperattractingIteration::usage = "Defines by B\[ODoubleDot]tchler's Functional Equation"
+
 BellPolynomial::usage = "BellPolynomial[n] is the nth Bell polynomial."
 dyne::usage = "dyne[n] the internal hybrid analytic/combinatoric representation of the nth derivative of iterated function."
 Dyne::usage = "The nth derivative of iterated function."
@@ -33,6 +36,7 @@ $n::Usage = "Time variable";
 $function::usage = "Function"
 $p::usage = "Fixed point";
 $z::usage = "Space variable";
+$s::usage = ""
 
 Tetrate::usage = "[u_Complex,v_Complex]"
 
@@ -42,7 +46,7 @@ hierarchies::usage = "hierarchies[n] computes the instances of Schroeder's Fourt
 uhier::usage = "uhier[n] computes the instances of A000669."
 lhier::usage = "lhier[n] computes the instances of A000311."
 
-Classification::usage = "General, Hyperbolic or Parabolic"
+Classification::usage = "GenericIteration, HyperbolicIteration or ParabolicIteration"
 Algorithm::usage = "Generic or Native"
 
 dyn::usage = "Instance of the unlabeled hierarchies combinatoric structure."
@@ -54,7 +58,7 @@ k::usage = "Used to manage summation iterators."
 
 Begin["`Private`"]
 
-Options[FractionalIteration] =  {Verbose -> False, Classification -> Generic, Algorithm -> Native};
+Options[FractionalIteration] =  {Verbose -> False, Classification -> GenericIteration, Algorithm -> Native};
 
 Format[k[_,i_],TeXForm]:=Subscript[k,i]; 
 Format[d[i_],TeXForm]:=Subscript[$function,i];
@@ -162,31 +166,32 @@ Format[d[i_]]:=Subscript[$function,i];
           x (* /. Times \[Rule] NonCommutativeMultiply *)
             /. dyn -> Dyn
             /. d[m_] :> derv[m] 
-            /. sum[a_,{b__}] -> Inactive[Sum[a,b]]
+            /. sum[a_,{b__}] -> HoldForm[Sum[a,b]]
       ];             
 
   (* Main function of package *)
   (* The scope of $derivative and $n is the package so that the dyn rules will work *)  
   (* The scope of $function, $p, and $z is the package to support different formats *)  
-  GenericIteration[f_, n_, z_, p_, max_Integer:4 ,opts___] := 
-    Module[{verbose,classification,algorithm,s},
+  FractionalIteration[f_, n_, z_, p_, max_Integer:4 ,opts___] := 
+    Module[{verbose,classification,algorithm,r,s},
       {verbose} = {Verbose} /. {opts} /. Options[FractionalIteration];
       {classification} = {Classification} /. {opts} /. Options[FractionalIteration];
       {algorithm} = {Algorithm} /. {opts} /. Options[FractionalIteration];
       If[verbose, 
-        Print["-----", ToString[classification]," --- ",ToString[algorithm]," ------------"];
+        Print["----- ", ToString[classification]," --- ",ToString[algorithm]," ------------"];
       ];
       $n=n;
       $function=f;
       $p=p;
       $z=z;
-      derv[1]=Echo[D[$function[$z],{$z,1}] /. $z -> $p];
+      If[classification==ParabolicIteration,Derivative[1][$function][$p]=1];
+      derv[1]=D[$function[$z],{$z,1}] /. $z -> $p;
       Do[
-        derv[$derivative]=Echo[D[$function[$z],{$z,$derivative}] /. $z -> $p];
+        derv[$derivative]=D[$function[$z],{$z,$derivative}] /. $z -> $p;
         If[verbose, 
           Print[Superscript[D,$derivative] Superscript[$f,$n][$p]//TraditionalForm];   
         ]; 
-        Echo[dyne[$derivative]];
+        dyne[$derivative];
         If[verbose, 
           Print[dyne[$derivative] /. d[k_] -> Subscript[$function,k] //TraditionalForm];
           Print[Dyne[$derivative]//TraditionalForm];
@@ -194,26 +199,19 @@ Format[d[i_]]:=Subscript[$function,i];
         ];          
       ,{$derivative,2,max}
       ];
-    s=$p+Sum[1/$derivative!*Dyne[$derivative]*($z-$p)^$derivative,{$derivative,1,max}];
-    (*If[classification==Parabolic,s=Activate[(s /.((f'[p]^__)->1))] ,s];*)
-      Switch[classification,
-         Hyperbolic, s=Activate[s],
-       Parabolic, s=Activate[(s /.(($function'[$p]^__)->1))],
-       Generic, s=(s /. Inactive->HoldForm),
-       _, s=(s /. Inactive->HoldForm)
-    ];
-    s
-    ];    
+      s=$p+Sum[1/$derivative!*Dyne[$derivative]*($z-$p)^$derivative,{$derivative,1,max}];
+      (*If[classification==HyperbolicIteration,s=Activate[s],s];*)
+      s=Switch[classification,
+         GenericIteration, s /. Inactive->HoldForm,
+         HyperbolicIteration, s /. HoldForm->Identity /. Inactive->Identity,
+         ParabolicIteration, s /. Derivative[1][f][p]^n->1 /. Sum[_,__]->1 // ReleaseHold,
+         _, Identity 
+      ];
+      s
+];
 
-   HyperbolicIteration[f_, n_, z_, p_, max_Integer:4 ,opts___] := 
-        Module[{},
-           ReleaseHold[GenericIteration[f, n, z, p, max, Classification->Hyperbolic]]
-        ];
-   ParabolicIteration[f_, n_, z_, p_, max_Integer:4,  opts___ ] := 
-        Module[{},
-           ReleaseHold[GenericIteration[f, n, z, p, max, Classification->Parabolic]/.f'[p]^(__)->1]
-        ];
-   IrrationalIteration[f_, n_, z_, p_, max_Integer ,opts___] := 
+(*
+    IrrationalIteration[f_, n_, z_, p_, max_Integer ,opts___] := 
          IrrationalIteration[i] = HyperbolicIteration[f, n, z, p, max ,opts] /. n -> Mod[n,j];
    sup[x_] := Module[{position=1,y},
          y = x /. a_Integer :> k[a,position++];
@@ -221,11 +219,12 @@ Format[d[i_]]:=Subscript[$function,i];
            Plus @@((First[#]-1)*# &)/@ Flatten[y])]/.k[__]->0
        ];
    SuperattractingIteration[i_] := SuperattractingIteration[i]=dyne[i] /. dyn -> sup /. d[m_] -> Derivative[m][$function][$p] ;
+*)
 
 (* Test * -------------------------------------------------------------*)
 
 Test[max_:4] := Module[{fi,fia,fib,fic}, 
-			fi=GenericIteration[f,n,z,0,max];
+			fi=FractionalIteration[f,n,z,0,max];
 			fia=fi /. n->a;
 			fib=fi /. n->b;
 			fic=fi /. n->(a+b);
