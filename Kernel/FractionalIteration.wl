@@ -180,32 +180,39 @@ Format[d[i_]]:=Subscript[$function,i];
       If[verbose, 
         Print["----- ", ToString[classification]," --- ",ToString[algorithm]," ------------"];
       ];
-      $n=n;
-      $function=f;
-      $p=p;
-      $z=z;
-      If[classification==ParabolicIteration,Derivative[1][$function][$p]=1];
-      derv[1]=D[$function[$z],{$z,1}] /. $z -> $p;
-      Do[
-        derv[$derivative]=D[$function[$z],{$z,$derivative}] /. $z -> $p;
-        If[verbose, 
-          Print[Superscript[D,$derivative] Superscript[$f,$n][$p]//TraditionalForm];   
-        ]; 
-        dyne[$derivative];
-        If[verbose, 
-          Print[dyne[$derivative] /. d[k_] -> Subscript[$function,k] //TraditionalForm];
-          Print[Dyne[$derivative]//TraditionalForm];
-          Print["----------------------------------------------------"];
-        ];          
-      ,{$derivative,2,max}
-      ];
-      s=$p+Sum[1/$derivative!*Dyne[$derivative]*($z-$p)^$derivative,{$derivative,1,max}];
-      (*If[classification==HyperbolicIteration,s=Activate[s],s];*)
-      s=Switch[classification,
-         GenericIteration, s /. Inactive->HoldForm,
-         HyperbolicIteration, s /. HoldForm->Identity /. Inactive->Identity,
-         ParabolicIteration, s /. Derivative[1][f][p]^n->1 /. Sum[_,__]->1 // ReleaseHold,
-         _, Identity 
+      Switch[algorithm,
+         Generic,      
+            $n=n;
+            $function=f;
+            $p=p;
+            $z=z;
+            If[classification==ParabolicIteration,Derivative[1][$function][$p]=1];
+            derv[1]=D[$function[$z],{$z,1}] /. $z -> $p;
+            Do[
+              derv[$derivative]=D[$function[$z],{$z,$derivative}] /. $z -> $p;
+              If[verbose, 
+                Print[Superscript[D,$derivative] Superscript[$f,$n][$p]//TraditionalForm];   
+              ]; 
+              dyne[$derivative];
+              If[verbose, 
+                Print[dyne[$derivative] /. d[k_] -> Subscript[$function,k] //TraditionalForm];
+                Print[Dyne[$derivative]//TraditionalForm];
+                Print["----------------------------------------------------"];
+              ];          
+              ,{$derivative,2,max}
+            ];
+            s=$p+Sum[1/$derivative!*Dyne[$derivative]*($z-$p)^$derivative,{$derivative,1,max}];
+            s=Switch[classification,
+               HyperbolicIteration, s /. HoldForm->Identity /. Inactive->Identity,
+               ParabolicIteration, s /. Derivative[1][f][p]^n->1 /. Sum[_,__]->1 // ReleaseHold,
+               _, s /. Inactive->HoldForm 
+            ],
+            Native,
+               s=Switch[classification,
+                  HyperbolicIteration, s /. HoldForm->Identity /. Inactive->Identity,
+                  ParabolicIteration, s /. Derivative[1][f][p]^n->1 /. Sum[_,__]->1 // ReleaseHold,
+                  _, s /. Inactive->HoldForm 
+            ]
       ];
       s
 ];
