@@ -5,7 +5,7 @@
 (* :Author: Daniel Geisler, Sept 2022.         *)
 (* :Summary:                                   *)
 (* :Context: FractionalIteration`              *)
-(* :Package Version: 0.3.0                     *)
+(* :Package Version: 0.3.1                     *)
 (* :Copyright: Copyright 2022, Daniel Geisler. *)
 (* :Mathematica Version: 13.1                  *)
 
@@ -21,10 +21,7 @@ BeginPackage["FractionalIteration`"]
 
 (* User functions *)
 FractionalIteration::usage = "FractionalIteration"
-SymbolicAll::usage = "SymbolicAll[function, time variable, space variable, fixed point, derivatives computed, options]; example SymbolicAll[f, n, z, p, size, Verbose\[Rule]True]. Computes the continuous iteration of f at fixed point p."
-HyperbolicIteration::usage = "HyperbolicIteration[function, time variable, space variable, fixed point, derivatives computed, options] defined by Sch\[ODoubleDot]der's Functional Equation"
-ParabolicIteration::usage = "ParabolicIteration[function, time variable, space variable, fixed point, derivatives computed, options] defined by Abel's Functional Equation"
-SuperattractingIteration::usage = "Defines by B\[ODoubleDot]tchler's Functional Equation"
+SymbolicUniversal::usage = "SymbolicUniversal[function, time variable, space variable, fixed point, derivatives computed, options]; example SymbolicUniversal[f, n, z, p, size, Verbose\[Rule]True]. Computes the continuous iteration of f at fixed point p."
 BellPolynomial::usage = "BellPolynomial[n] is the nth Bell polynomial."
 dyne::usage = "dyne[n] the internal hybrid analytic/combinatoric representation of the nth derivative of iterated function."
 Dyne::usage = "The nth derivative of iterated function."
@@ -39,13 +36,14 @@ NativeHyperbolic::usage= "";
 NativeParabolic::usage= "";
 SymbolicHyperbolic::usage= "";
 SymbolicParabolic::usage= "";
-SymbolicAll::usage= "";
+SymbolicUniversal::usage= "";
 Universal::usage= "";
 Symbolic::usage= "";
 
 
 n::Usage = "Time variable";
 f::usage = "Function"
+g::usage = "Function"
 p::usage = "Fixed point";
 z::usage = "Space variable";
 classification::usage = "";
@@ -73,7 +71,7 @@ k::usage = "Used to manage summation iterators."
 Begin["`Private`"]
 
 Options[FractionalIteration] =  
-   {Verbose -> True, Classification -> Universal, Algorithm -> Symbolic};
+   {Verbose -> False, Classification -> Universal, Algorithm -> Symbolic};
 
 Format[k[_,i_],TeXForm]:=Subscript[k,i]; 
 Format[d[i_],TeXForm]:=Subscript[$f,i];
@@ -184,6 +182,7 @@ Format[d[i_]]:=Subscript[$f,i];
             /. sum[a_,{b__}] -> HoldForm[Sum[a,b]]
       ];             
 
+
   (* Main function of package *)
   (* The scope of $derivative and n is the package so that the dyn rules will work *)  
   (* The scope of $f, $p, and $z is the package to support different formats *)  
@@ -197,12 +196,12 @@ Format[d[i_]]:=Subscript[$f,i];
          {Hyperbolic,Native}, NativeHyperbolic[f, n, z, p, max,opts],
          {Parabolic,Symbolic}, SymbolicParabolic[f, n, z, p, max,opts],
          {Hyperbolic,Symbolic}, SymbolicHyperbolic[f, n, z, p, max,opts],   
-         {Universal,Symbolic}, SymbolicAll[f, n, z, p, max,opts], 
-         __,SymbolicAll[f, n, z, p, max,opts]
+         {Universal,Symbolic}, SymbolicUniversal[f, n, z, p, max,opts], 
+         __,SymbolicUniversal[f, n, z, p, max,opts]
       ]    
     ];  
   
-  SymbolicAll[f_, n_, z_, p_, max_Integer:4 ,opts___] := 
+  SymbolicUniversal[f_, n_, z_, p_, max_Integer:4 ,opts___] := 
     Module[{verbose,s},
       {verbose} = {Verbose} /. {opts} /. Options[FractionalIteration];
       If[verbose, 
@@ -226,13 +225,54 @@ Format[d[i_]]:=Subscript[$f,i];
     ];    
     
     SymbolicHyperbolic[f_, n_, z_, p_, max_,opts___]:= Module[{},
-       SymbolicAll[f, n, z, p, max,opts] /. HoldForm->Identity
+       SymbolicUniversal[f, n, z, p, max,opts] /. HoldForm->Identity
     ];
+    
     SymbolicParabolic[f_, n_, z_, p_, max_,opts___]:=Module[{},
-       SymbolicAll[f, n, z, p, max,opts] /. f'[p]^u___->1/. HoldForm->Identity
+       SymbolicUniversal[f, n, z, p, max,opts] /. f'[p]^u___->1/. HoldForm->Identity
     ];
-    NativeHyperbolic[f_, n_, z_, p_, max_,opts___]:=Echo[1];
-    NativeParabolic[f_, n_, z_, p_, max_,opts___]:=Echo[2];
+    
+    NativeHyperbolic[f_, n_, z_, p_, max_,opts___]:=Module[{},
+     DD[f,n, p, 0]=p;
+     DD[f,n, p, 1]= Derivative[1][f][p]^n;
+     DD[f,m_, p, 1]:= DD[f,n, p,1] /. n -> m ;		
+     For[derv=2,derv<=max,derv++,
+	    term= \!\(
+\*SubscriptBox[\(\[PartialD]\), \({z, derv}\)]\(f[
+\(\*SuperscriptBox[\(f\), \(n - 1\)]\)[z]]\)\) 
+	          /. Derivative[derv][f^(-1 +n)][z] -> \[ScriptCapitalD]  					
+     	     //. Derivative[vcnt_][f^(-1+n)][z] ->  DD[f, -1+n, p, vcnt] 
+		      //. z -> p
+		      /. (f^m_)[p] -> p
+		      //. Derivative[1][f][p] -> \[ScriptCapitalL]
+              /. \[ScriptCapitalD] -> 0 ;
+        DD[f, n, p, derv] = term //. \[ScriptCapitalL]^(b_ n + c_) -> \[ScriptCapitalL]^(b + c -1)/(\[ScriptCapitalL]^(b -1) -1) (\[ScriptCapitalL]^(b n) - \[ScriptCapitalL]^n);
+        DD[f, n, p, derv]= Collect[DD[f, n, p,derv],\[ScriptCapitalL]^n] /. \[ScriptCapitalL]->f'[p];
+     ];
+     Dyn[f, n, p] := (Sum[DD[f, n, p,cnt]/cnt! (z- p)^cnt,{cnt,0,max}]);
+     Dyn[f, n, p]
+  ];
+  
+  NativeParabolic[f_, n_, z_, p_, max_,opts___]:=
+     Module[{m, term},
+         DD[f,n, p, 0]=p;
+         DD[f,m_, p, 1]= 1 ;	
+         For[derv=2,derv<=max,derv++,
+	        term= \!\(
+\*SubscriptBox[\(\[PartialD]\), \({z, derv}\)]\(f[
+\(\*SuperscriptBox[\(f\), \(n - 1\)]\)[z]]\)\) 
+	              /. Derivative[derv][f^(-1 +n)][z] -> \[ScriptCapitalD]  					
+     	         //. Derivative[vcnt_][f^(-1+n)][z] ->  DD[f, -1+n, p, vcnt] 
+		          //. z -> p
+		          /. (f^m_)[p] -> p
+		          //. Derivative[1][f][p] -> \[ScriptCapitalL]
+                  /. \[ScriptCapitalD] -> 0 ;
+            DD[f, k_, p, derv] := term //. \[ScriptCapitalL]^(b_ k + c_) -> 1;
+            DD[f, n, p, derv] := Collect[DD[f, n, p,derv],\[ScriptCapitalL]^n];
+ 	    ];
+	Dyn[f, n, p] = (Sum[DD[f, n, p,cnt]/cnt! (z- p)^cnt,{cnt,0,max}]) 
+];
+
 
 
    sup[x_] := Module[{position=1,y},
@@ -245,12 +285,13 @@ Format[d[i_]]:=Subscript[$f,i];
 (* Test * -------------------------------------------------------------*)
 
 Test[max_:4] := Module[{fi,fia,fib,fic}, 
-			fi=SymbolicAll[f,n,z,0,max];
-			fia=fi /. n->a;
-			fib=fi /. n->b;
-			fic=fi /. n->(a+b);
-			Series[Activate[(fia /. z->fib)-fic],{z,0,max}]
-		];
+	fi=FractionalIteration[f,n,z,0,max] /. HoldForm->Inactive;
+	fia=fi /. n->a;
+	fib=fi /. n->b;
+	fic=fi /. n->(a+b);
+	Series[Activate[(fia /. z->fib)-fic],{z,0,max}]
+	(*Activate[(fia /. z->fib)-fic]*)
+];
 	
 (* Test - End*)
 
