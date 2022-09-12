@@ -5,7 +5,7 @@
 (* :Author: Daniel Geisler, Sept 2022.         *)
 (* :Summary:                                   *)
 (* :Context: FractionalIteration`              *)
-(* :Package Version: 0.2.0                     *)
+(* :Package Version: 0.3.0                     *)
 (* :Copyright: Copyright 2022, Daniel Geisler. *)
 (* :Mathematica Version: 13.1                  *)
 
@@ -20,33 +20,47 @@ BeginPackage["FractionalIteration`"]
 (*$RecursionLimit=Infinity;*)  
 
 (* User functions *)
-(*FractionalIteration::usage = "FractionalIteration"*)
-FractionalIteration::usage = "FractionalIteration[function, time variable, space variable, fixed point, derivatives computed, options]; example FractionalIteration[f, n, z, p, size, Verbose\[Rule]True]. Computes the continuous iteration of f at fixed point p."
-
-GenericIteration::usage = ""
+FractionalIteration::usage = "FractionalIteration"
+SymbolicAll::usage = "SymbolicAll[function, time variable, space variable, fixed point, derivatives computed, options]; example SymbolicAll[f, n, z, p, size, Verbose\[Rule]True]. Computes the continuous iteration of f at fixed point p."
 HyperbolicIteration::usage = "HyperbolicIteration[function, time variable, space variable, fixed point, derivatives computed, options] defined by Sch\[ODoubleDot]der's Functional Equation"
 ParabolicIteration::usage = "ParabolicIteration[function, time variable, space variable, fixed point, derivatives computed, options] defined by Abel's Functional Equation"
 SuperattractingIteration::usage = "Defines by B\[ODoubleDot]tchler's Functional Equation"
-
 BellPolynomial::usage = "BellPolynomial[n] is the nth Bell polynomial."
 dyne::usage = "dyne[n] the internal hybrid analytic/combinatoric representation of the nth derivative of iterated function."
 Dyne::usage = "The nth derivative of iterated function."
 
-$n::Usage = "Time variable";
-$function::usage = "Function"
-$p::usage = "Fixed point";
-$z::usage = "Space variable";
-$s::usage = ""
+Hyperbolic::usage = "";
+Native::usage = "";
+Parabolic::usage = "";
+Universal::usage = "";
+Symbolic::usage = "";
+
+NativeHyperbolic::usage= "";
+NativeParabolic::usage= "";
+SymbolicHyperbolic::usage= "";
+SymbolicParabolic::usage= "";
+SymbolicAll::usage= "";
+Universal::usage= "";
+Symbolic::usage= "";
+
+
+n::Usage = "Time variable";
+f::usage = "Function"
+p::usage = "Fixed point";
+z::usage = "Space variable";
+classification::usage = "";
+algorithm::usage = "";
 
 Tetrate::usage = "[u_Complex,v_Complex]"
 
+DebugSwitch::usage = ""
 Test::usage = "Test[derivitives] or Test[] which defaults to derivitives=4 validates that f^a(f^b(z))-f^(a+b)(z)=0."
 
 hierarchies::usage = "hierarchies[n] computes the instances of Schroeder's Fourth Problem for n items."
 uhier::usage = "uhier[n] computes the instances of A000669."
 lhier::usage = "lhier[n] computes the instances of A000311."
 
-Classification::usage = "GenericIteration, HyperbolicIteration or ParabolicIteration"
+Classification::usage = "General, Hyperbolic or Parabolic"
 Algorithm::usage = "Generic or Native"
 
 dyn::usage = "Instance of the unlabeled hierarchies combinatoric structure."
@@ -58,18 +72,19 @@ k::usage = "Used to manage summation iterators."
 
 Begin["`Private`"]
 
-Options[FractionalIteration] =  {Verbose -> False, Classification -> GenericIteration, Algorithm -> Native};
+Options[FractionalIteration] =  
+   {Verbose -> True, Classification -> Universal, Algorithm -> Symbolic};
 
 Format[k[_,i_],TeXForm]:=Subscript[k,i]; 
-Format[d[i_],TeXForm]:=Subscript[$function,i];
+Format[d[i_],TeXForm]:=Subscript[$f,i];
 Format[dyn[i_],TeXForm]:="{dyn("<>ToString[TeXForm[i]]<>")}";
 Format[Derivative[i_][f_][_],TeXForm]:=Subscript[f,i];
 
 Format[k[_,i_]]:=Subscript[k,i]; 
-Format[d[i_]]:=Subscript[$function,i]; 
+Format[d[i_]]:=Subscript[$f,i]; 
 
 (* Bell polynomials -----------------------------------------------------*) 
-  BellPolynomial[0]=$function[g[$z]];
+  BellPolynomial[0]=$f[g[$z]];
   BellPolynomial[i_Integer/;i>0] := BellPolynomial[i]=D[BellPolynomial[i-1],$z];
 (* Bell polynomials - End *)
 
@@ -80,7 +95,7 @@ Format[d[i_]]:=Subscript[$function,i];
   (* dyne[k] is the quasi-combinatorial internal version of Dyne[k].   *)  
   (* The following is classical identity of Lyapunov exponent as       *)
   (* first derivative of dynamical system.                             *)
-  dyne[1]=d[1]^$n; 
+  dyne[1]=d[1]^n; 
 
   (* Done manually because of limitation of RSolve function in Mathematica 4.1         *)
   (* Solves recurrence equation for kth derivative of dynamical system f^n(z_0)        *)
@@ -109,7 +124,7 @@ Format[d[i_]]:=Subscript[$function,i];
       ExpandAll[
         BellPolynomial[i] /. D[g[$z],{$z,i}] -> 0  
                 /. g[$z] -> $z 
-                /. Derivative[m_][g][$z] :> dyne[m] /. $n -> $n-1 
+                /. Derivative[m_][g][$z] :> dyne[m] /. n -> n-1 
                 /. Derivative[m_][$f][$z] -> d[m]
     ];    
 
@@ -132,7 +147,7 @@ Format[d[i_]]:=Subscript[$function,i];
   solve[a_+b_,i_] := solve[a,i]+solve[b,i];
 
   (* Computes the exponential of the nested summation *)
-  exp[x_]:=d[1]^(First[First[x]]*$n-Plus @@ (First /@ Flatten[x])
+  exp[x_]:=d[1]^(First[First[x]]*n-Plus @@ (First /@ Flatten[x])
                  -Plus @@((First[#]-1)*# &)/@ Flatten[x]);
 
   (* Recursively computes the range constraints of the nested summation's iterator *)
@@ -140,7 +155,7 @@ Format[d[i_]]:=Subscript[$function,i];
   prop[{{k[a__],0,b_},c__},d_] := {{k[a],0,b-d},(prop[#,1+d+k[a]]&)/@{c}};
 
   (* Computes the nested summation's iterator *)
-  iter[x_] := Partition[Flatten[prop[x /. k[a__] -> {k[a],0,$n-1},0]],3];
+  iter[x_] := Partition[Flatten[prop[x /. k[a__] -> {k[a],0,n-1},0]],3];
 
   (* This is an analytic functor transforming the combinatoric structure represented *)
   (* by dyn[] into the associated nested summation.                                  *)
@@ -156,7 +171,7 @@ Format[d[i_]]:=Subscript[$function,i];
   (* Dyne[k] is the kth derivative of dynamical system f^n(z_0) in the form of    *)
   (* nested summations. *)
 (*  Dyne[i_] := Dyne[i]=Activate[Decode[dyne[i]]];*)
-  Dyne[i_] := Dyne[i]= Decode[dyne[i]] /. Derivative[d_][$function][$z]->Derivative[d][$function][$p];
+  Dyne[i_] := Dyne[i]= Decode[dyne[i]] /. Derivative[d_][$f][$z]->Derivative[d][$f][$p];
 (*    Dyne[1] = Decode[dyne[1]];*)
 
   (* Decodes from dyne[k] to Dyne[k]. *)
@@ -170,68 +185,67 @@ Format[d[i_]]:=Subscript[$function,i];
       ];             
 
   (* Main function of package *)
-  (* The scope of $derivative and $n is the package so that the dyn rules will work *)  
-  (* The scope of $function, $p, and $z is the package to support different formats *)  
+  (* The scope of $derivative and n is the package so that the dyn rules will work *)  
+  (* The scope of $f, $p, and $z is the package to support different formats *)  
   FractionalIteration[f_, n_, z_, p_, max_Integer:4 ,opts___] := 
-    Module[{verbose,classification,algorithm,r,s},
+    Module[{verbose,s},
+      {verbose,classification,algorithm} = {Verbose,Classification,Algorithm} 
+         /. {opts} /. Options[FractionalIteration];
+      Echo[{verbose,classification,algorithm}];
+      Switch[{classification,algorithm},
+         {Parabolic,Native}, NativeParabolic[f, n, z, p, max,opts],
+         {Hyperbolic,Native}, NativeHyperbolic[f, n, z, p, max,opts],
+         {Parabolic,Symbolic}, SymbolicParabolic[f, n, z, p, max,opts],
+         {Hyperbolic,Symbolic}, SymbolicHyperbolic[f, n, z, p, max,opts],   
+         {Universal,Symbolic}, SymbolicAll[f, n, z, p, max,opts], 
+         __,SymbolicAll[f, n, z, p, max,opts]
+      ]    
+    ];  
+  
+  SymbolicAll[f_, n_, z_, p_, max_Integer:4 ,opts___] := 
+    Module[{verbose,s},
       {verbose} = {Verbose} /. {opts} /. Options[FractionalIteration];
-      {classification} = {Classification} /. {opts} /. Options[FractionalIteration];
-      {algorithm} = {Algorithm} /. {opts} /. Options[FractionalIteration];
       If[verbose, 
-        Print["----- ", ToString[classification]," --- ",ToString[algorithm]," ------------"];
+        Print["-----", ToString[classification]," --- ",ToString[algorithm]," ------------"];
       ];
-      Switch[algorithm,
-         Generic,      
-            $n=n;
-            $function=f;
-            $p=p;
-            $z=z;
-            If[classification==ParabolicIteration,Derivative[1][$function][$p]=1];
-            derv[1]=D[$function[$z],{$z,1}] /. $z -> $p;
-            Do[
-              derv[$derivative]=D[$function[$z],{$z,$derivative}] /. $z -> $p;
-              If[verbose, 
-                Print[Superscript[D,$derivative] Superscript[$f,$n][$p]//TraditionalForm];   
-              ]; 
-              dyne[$derivative];
-              If[verbose, 
-                Print[dyne[$derivative] /. d[k_] -> Subscript[$function,k] //TraditionalForm];
-                Print[Dyne[$derivative]//TraditionalForm];
-                Print["----------------------------------------------------"];
-              ];          
-              ,{$derivative,2,max}
-            ];
-            s=$p+Sum[1/$derivative!*Dyne[$derivative]*($z-$p)^$derivative,{$derivative,1,max}];
-            s=Switch[classification,
-               HyperbolicIteration, s /. HoldForm->Identity /. Inactive->Identity,
-               ParabolicIteration, s /. Derivative[1][f][p]^n->1 /. Sum[_,__]->1 // ReleaseHold,
-               _, s /. Inactive->HoldForm 
-            ],
-            Native,
-               s=Switch[classification,
-                  HyperbolicIteration, s /. HoldForm->Identity /. Inactive->Identity,
-                  ParabolicIteration, s /. Derivative[1][f][p]^n->1 /. Sum[_,__]->1 // ReleaseHold,
-                  _, s /. Inactive->HoldForm 
-            ]
+      derv[1]=D[f[z],{z,1}] /. z -> p;
+      Do[
+        derv[$derivative]=D[f[z],{z,$derivative}] /. z -> p;
+        If[verbose, 
+          Print[Superscript[D,$derivative] Superscript[f,n][p]//TraditionalForm];   
+        ]; 
+        dyne[$derivative];
+        If[verbose, 
+          Print[dyne[$derivative] /. d[k_] -> Subscript[f,k] //TraditionalForm];
+          Print[Dyne[$derivative]//TraditionalForm];
+          Print["----------------------------------------------------"];
+        ];          
+      ,{$derivative,2,max}
       ];
-      s
-];
+      s=p+Sum[1/$derivative!*Dyne[$derivative]*(z-p)^$derivative,{$derivative,1,max}]
+    ];    
+    
+    SymbolicHyperbolic[f_, n_, z_, p_, max_,opts___]:= Module[{},
+       SymbolicAll[f, n, z, p, max,opts] /. HoldForm->Identity
+    ];
+    SymbolicParabolic[f_, n_, z_, p_, max_,opts___]:=Module[{},
+       SymbolicAll[f, n, z, p, max,opts] /. f'[p]^u___->1/. HoldForm->Identity
+    ];
+    NativeHyperbolic[f_, n_, z_, p_, max_,opts___]:=Echo[1];
+    NativeParabolic[f_, n_, z_, p_, max_,opts___]:=Echo[2];
 
-(*
-    IrrationalIteration[f_, n_, z_, p_, max_Integer ,opts___] := 
-         IrrationalIteration[i] = HyperbolicIteration[f, n, z, p, max ,opts] /. n -> Mod[n,j];
+
    sup[x_] := Module[{position=1,y},
          y = x /. a_Integer :> k[a,position++];
-         KroneckerDelta[(First[First[y]]*$n-Plus @@ (First /@ Flatten[y])-
+         KroneckerDelta[(First[First[y]]*n-Plus @@ (First /@ Flatten[y])-
            Plus @@((First[#]-1)*# &)/@ Flatten[y])]/.k[__]->0
        ];
-   SuperattractingIteration[i_] := SuperattractingIteration[i]=dyne[i] /. dyn -> sup /. d[m_] -> Derivative[m][$function][$p] ;
-*)
+   SuperattractingIteration[i_] := SuperattractingIteration[i]=dyne[i] /. dyn -> sup /. d[m_] -> Derivative[m][$f][$p] ;
 
 (* Test * -------------------------------------------------------------*)
 
 Test[max_:4] := Module[{fi,fia,fib,fic}, 
-			fi=FractionalIteration[f,n,z,0,max];
+			fi=SymbolicAll[f,n,z,0,max];
 			fia=fi /. n->a;
 			fib=fi /. n->b;
 			fic=fi /. n->(a+b);
