@@ -1,12 +1,11 @@
 (* ::Package:: *)
 
-(* ::Code::Initialization::Normal:: *)
 (* :Title: Fractional Iteration                *)
 (* :Name: DanielGeisler/FractionalIteration`   *)
 (* :Author: Daniel Geisler, Sept 2022.         *)
 (* :Summary:                                   *)
 (* :Context: FractionalIteration`              *)
-(* :Package Version: 0.3.1                     *)
+(* :Package Version: 0.3.3                     *)
 (* :Copyright: Copyright 2022, Daniel Geisler. *)
 (* :Mathematica Version: 13.1                  *)
 
@@ -15,13 +14,9 @@
 (* based on Faa Di Bruno's formula                                       *)
 
 BeginPackage["FractionalIteration`"]
-(*Off[General::"spell1"];*)
-
-(* Bad sign; the Mathematica code is implemented in an ineffictive manner. *)  
-(*$RecursionLimit=Infinity;*)  
-
 (* User functions *)
 FractionalIteration::usage = "FractionalIteration"
+FI::usage = "FractionalIteration alias"
 SymbolicUniversal::usage = "SymbolicUniversal[function, time variable, space variable, fixed point, derivatives computed, options]; example SymbolicUniversal[f, n, z, p, size, Verbose\[Rule]True]. Computes the continuous iteration of f at fixed point p."
 BellPolynomial::usage = "BellPolynomial[n] is the nth Bell polynomial."
 dyne::usage = "dyne[n] the internal hybrid analytic/combinatoric representation of the nth derivative of iterated function."
@@ -42,7 +37,6 @@ Universal::usage= "";
 Symbolic::usage= "";
 
 
-(* ::Code::Initialization::Normal:: *)
 n::Usage = "Time variable";
 f::usage = "Function"
 g::usage = "Function"
@@ -52,6 +46,10 @@ classification::usage = "";
 algorithm::usage = "";
 
 Tetrate::usage = "[u_Complex,v_Complex]"
+Ackermann::usage = ""
+A::usage = ""
+SuperPower::usage = ""
+SuperExp::usage = ""
 
 DebugSwitch::usage = ""
 Test::usage = "Test[derivitives] or Test[] which defaults to derivitives=4 validates that f^a(f^b(z))-f^(a+b)(z)=0."
@@ -82,6 +80,9 @@ Format[Derivative[i_][f_][_],TeXForm]:=Subscript[f,i];
 
 Format[k[_,i_]]:=Subscript[k,i]; 
 Format[d[i_]]:=Subscript[$f,i]; 
+
+Format[Ackermann[a_,b_,n_]]:= HoldForm[a Superscript["\[UpArrow]",n]b];
+Format[Ackermann[a_,n_][b_]]:= HoldForm[a Superscript["\[UpArrow]",n]b];
 
 (* Bell polynomials -----------------------------------------------------*) 
   BellPolynomial[0]=$f[g[$z]];
@@ -185,7 +186,6 @@ Format[d[i_]]:=Subscript[$f,i];
       ];             
 
 
-(* ::Code::Initialization::Normal:: *)
   (* Main function of package *)
   (* The scope of $derivative and n is the package so that the dyn rules will work *)  
   (* The scope of $f, $p, and $z is the package to support different formats *)  
@@ -203,7 +203,8 @@ Format[d[i_]]:=Subscript[$f,i];
          __,SymbolicUniversal[f, n, z, p, max,opts]
       ]    
     ];  
-  
+  FI[f_, n_, z_, p_, max_Integer:4 ,opts___] :=
+    FractionalIteration[f,n,z,p,max,opts]; 
   SymbolicUniversal[f_, n_, z_, p_, max_Integer:4 ,opts___] := 
     Module[{verbose,s},
       {verbose} = {Verbose} /. {opts} /. Options[FractionalIteration];
@@ -278,7 +279,6 @@ Format[d[i_]]:=Subscript[$f,i];
 
 
 
-(* ::Code::Initialization::Normal:: *)
    sup[x_] := Module[{position=1,y},
          y = x /. a_Integer :> k[a,position++];
          KroneckerDelta[(First[First[y]]*n-Plus @@ (First /@ Flatten[y])-
@@ -299,9 +299,15 @@ Test[max_:4] := Module[{fi,fia,fib,fic},
 	
 (* Test - End*)
 
-Tetrate[u_,v_]:= Module[{},
-N[u^v]
-];
+
+(* Ackermann ---------------------------------------------------------*)
+A[a_,b_,n_]:=Ackermann[a,b,n];
+A[a_,n_][b_]:=Ackermann[a,b,n];
+SuperPower[x_,a_]:= Ackermann[x,a,2];
+SuperExp[a_,x_]:=Ackermann[a,x,2];
+Ackermann[a_,b_,1]:=Power[a,b];
+(* Ackermann - End*)
+
 
 (* Combinatorics -----------------------------------------------------*)
 
