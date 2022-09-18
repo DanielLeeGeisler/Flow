@@ -50,6 +50,8 @@ Ackermann::usage = ""
 A::usage = ""
 SuperPower::usage = ""
 SuperExp::usage = ""
+Inv::usage = ""
+InvA::usage = ""
 
 DebugSwitch::usage = ""
 Test::usage = "Test[derivitives] or Test[] which defaults to derivitives=4 validates that f^a(f^b(z))-f^(a+b)(z)=0."
@@ -306,6 +308,8 @@ A[a_,n_][b_]:=Ackermann[a,b,n];
 SuperPower[x_,a_]:= Ackermann[x,a,2];
 SuperExp[a_,x_]:=Ackermann[a,x,2];
 Ackermann[a_,b_,1]:=Power[a,b];
+Ackermann[a_,0,n_]:=1;
+Inv[s_]:=InverseSeries[s];
 (* Ackermann - End*)
 
 
