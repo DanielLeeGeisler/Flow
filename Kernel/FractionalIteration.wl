@@ -3,26 +3,28 @@
 (* :Title: Fractional Iteration                *)
 (* :Name: DanielGeisler/FractionalIteration`   *)
 (* :Author: Daniel Geisler, Sept 2022.         *)
-(* :Summary:                                   *)
+(* :Summary: Fractional iteration, extended    *)
+(* :         tetration and Ackermann function. *)
 (* :Context: FractionalIteration`              *)
-(* :Package Version: 0.3.3                     *)
+(* :Package Version: 0.3.6                     *)
 (* :Copyright: Copyright 2022, Daniel Geisler. *)
 (* :Mathematica Version: 13.1                  *)
 
-(* NOTE: the software maxes out at to the fourth derivitive due to the   *)
-(* limitations of the rules. The rule engine needs to be replaced by one *)
-(* based on Faa Di Bruno's formula                                       *)
+(* NOTE: SymbolicUniversal maxes out at to the fourth derivitive due to the   *)
+(* limitations of the rules. The rule engine needs to be replaced by one      *)
+(* based on Faa Di Bruno's formula                                            *)
 
+Clear["FractionalIteration`*"]
 BeginPackage["FractionalIteration`"]
 (* User functions *)
-FractionalIteration::usage = "FractionalIteration"
-FI::usage = "FractionalIteration alias"
-SymbolicUniversal::usage = "SymbolicUniversal[function, time variable, space variable, fixed point, derivatives computed, options]; example SymbolicUniversal[f, n, z, p, size, Verbose\[Rule]True]. Computes the continuous iteration of f at fixed point p."
+FractionalIteration::usage = "FractionalIteration[function, time variable, space variable, fixed point, derivatives computed, options];" <> 
+   " example FractionalIteration[f, n, z, p, size, Verbose\[Rule]True]. Computes the continuous iteration of f at fixed point p."
+
 BellPolynomial::usage = "BellPolynomial[n] is the nth Bell polynomial."
 dyne::usage = "dyne[n] the internal hybrid analytic/combinatoric representation of the nth derivative of iterated function."
 Dyne::usage = "The nth derivative of iterated function."
 
-Hyperbolic::usage = "";
+Hyperbolic::usage = "Used in Classification->Hyperbolic";
 Native::usage = "";
 Parabolic::usage = "";
 Universal::usage = "";
@@ -32,7 +34,8 @@ NativeHyperbolic::usage= "";
 NativeParabolic::usage= "";
 SymbolicHyperbolic::usage= "";
 SymbolicParabolic::usage= "";
-SymbolicUniversal::usage= "";
+SymbolicUniversal::usage = "SymbolicUniversal[function, time variable, space variable, fixed point, derivatives computed, options];" <> 
+   " example SymbolicUniversal[f, n, z, p, size, Verbose\[Rule]True]. Computes the continuous iteration of f at fixed point p."
 Universal::usage= "";
 Symbolic::usage= "";
 
@@ -50,11 +53,11 @@ Ackermann::usage = ""
 A::usage = ""
 SuperPower::usage = ""
 SuperExp::usage = ""
-Inv::usage = ""
 InvA::usage = ""
 
 DebugSwitch::usage = ""
 Test::usage = "Test[derivitives] or Test[] which defaults to derivitives=4 validates that f^a(f^b(z))-f^(a+b)(z)=0."
+Reset::usage = ""
 
 hierarchies::usage = "hierarchies[n] computes the instances of Schroeder's Fourth Problem for n items."
 uhier::usage = "uhier[n] computes the instances of A000669."
@@ -83,8 +86,8 @@ Format[Derivative[i_][f_][_],TeXForm]:=Subscript[f,i];
 Format[k[_,i_]]:=Subscript[k,i]; 
 Format[d[i_]]:=Subscript[$f,i]; 
 
-Format[Ackermann[a_,b_,n_]]:= HoldForm[a Superscript["\[UpArrow]",n]b];
-Format[Ackermann[a_,n_][b_]]:= HoldForm[a Superscript["\[UpArrow]",n]b];
+(*Format[Ackermann[a_,b_,n_]]:= HoldForm[a Superscript["\[UpArrow]",n]b];
+Format[Ackermann[a_,n_][b_]]:= HoldForm[a Superscript["\[UpArrow]",n]b];*)
 
 (* Bell polynomials -----------------------------------------------------*) 
   BellPolynomial[0]=$f[g[$z]];
@@ -191,7 +194,7 @@ Format[Ackermann[a_,n_][b_]]:= HoldForm[a Superscript["\[UpArrow]",n]b];
   (* Main function of package *)
   (* The scope of $derivative and n is the package so that the dyn rules will work *)  
   (* The scope of $f, $p, and $z is the package to support different formats *)  
-  FractionalIteration[f_, n_, z_, p_, max_Integer:4 ,opts___] := 
+  FractionalIteration[f_, n_, z_, p_, max_Integer:3 ,opts___] := 
     Module[{verbose,s},
       {verbose,classification,algorithm} = {Verbose,Classification,Algorithm} 
          /. {opts} /. Options[FractionalIteration];
@@ -205,8 +208,7 @@ Format[Ackermann[a_,n_][b_]]:= HoldForm[a Superscript["\[UpArrow]",n]b];
          __,SymbolicUniversal[f, n, z, p, max,opts]
       ]    
     ];  
-  FI[f_, n_, z_, p_, max_Integer:4 ,opts___] :=
-    FractionalIteration[f,n,z,p,max,opts]; 
+
   SymbolicUniversal[f_, n_, z_, p_, max_Integer:4 ,opts___] := 
     Module[{verbose,s},
       {verbose} = {Verbose} /. {opts} /. Options[FractionalIteration];
@@ -241,19 +243,20 @@ Format[Ackermann[a_,n_][b_]]:= HoldForm[a Superscript["\[UpArrow]",n]b];
     NativeHyperbolic[f_, n_, z_, p_, max_,opts___]:=Module[{},
      DD[f,n, p, 0]=p;
      DD[f,n, p, 1]= Derivative[1][f][p]^n;
-     DD[f,m_, p, 1]:= DD[f,n, p,1] /. n -> m ;		
+     DD[f,m__, p, 1]:= DD[f,n, p,1] /. n -> m ;		
      For[derv=2,derv<=max,derv++,
 	    term= \!\(
 \*SubscriptBox[\(\[PartialD]\), \({z, derv}\)]\(f[
 \(\*SuperscriptBox[\(f\), \(n - 1\)]\)[z]]\)\) 
-	          /. Derivative[derv][f^(-1 +n)][z] -> \[ScriptCapitalD]  					
-     	     //. Derivative[vcnt_][f^(-1+n)][z] ->  DD[f, -1+n, p, vcnt] 
+	          //. Derivative[derv][f^(-1 +n)][z] -> \[ScriptCapitalD]  					
+     	     //. Derivative[vcnt__][f^(-1+n)][z] ->  DD[f, -1+n, p, vcnt] 
 		      //. z -> p
-		      /. (f^m_)[p] -> p
+		      //. (f^m_)[p] -> p
 		      //. Derivative[1][f][p] -> \[ScriptCapitalL]
-              /. \[ScriptCapitalD] -> 0 ;
+              //. \[ScriptCapitalD] -> 0;
         DD[f, n, p, derv] = term //. \[ScriptCapitalL]^(b_ n + c_) -> \[ScriptCapitalL]^(b + c -1)/(\[ScriptCapitalL]^(b -1) -1) (\[ScriptCapitalL]^(b n) - \[ScriptCapitalL]^n);
         DD[f, n, p, derv]= Collect[DD[f, n, p,derv],\[ScriptCapitalL]^n] /. \[ScriptCapitalL]->f'[p];
+        DD[f, -1+n, p, derv] = DD[f, n, p, derv] /. n -> m /. m -> -1+n;
      ];
      Dyn[f, n, p] := (Sum[DD[f, n, p,cnt]/cnt! (z- p)^cnt,{cnt,0,max}]);
      Dyn[f, n, p]
@@ -262,7 +265,7 @@ Format[Ackermann[a_,n_][b_]]:= HoldForm[a Superscript["\[UpArrow]",n]b];
   NativeParabolic[f_, n_, z_, p_, max_,opts___]:=
      Module[{m, term},
          DD[f,n, p, 0]=p;
-         DD[f,m_, p, 1]= 1 ;	
+         DD[f,m__, p, 1]= 1 ;	
          For[derv=2,derv<=max,derv++,
 	        term= \!\(
 \*SubscriptBox[\(\[PartialD]\), \({z, derv}\)]\(f[
@@ -270,11 +273,10 @@ Format[Ackermann[a_,n_][b_]]:= HoldForm[a Superscript["\[UpArrow]",n]b];
 	              /. Derivative[derv][f^(-1 +n)][z] -> \[ScriptCapitalD]  					
      	         //. Derivative[vcnt_][f^(-1+n)][z] ->  DD[f, -1+n, p, vcnt] 
 		          //. z -> p
-		          /. (f^m_)[p] -> p
+		          /. (f^m__)[p] -> p
 		          //. Derivative[1][f][p] -> \[ScriptCapitalL]
                   /. \[ScriptCapitalD] -> 0 ;
             DD[f, k_, p, derv] := term //. \[ScriptCapitalL]^(b_ k + c_) -> 1;
-            DD[f, n, p, derv] := Collect[DD[f, n, p,derv],\[ScriptCapitalL]^n];
  	    ];
 	Dyn[f, n, p] = (Sum[DD[f, n, p,cnt]/cnt! (z- p)^cnt,{cnt,0,max}]) 
 ];
@@ -298,6 +300,8 @@ Test[max_:4] := Module[{fi,fia,fib,fic},
 	Series[Activate[(fia /. z->fib)-fic],{z,0,max}]
 	(*Activate[(fia /. z->fib)-fic]*)
 ];
+
+Reset[]:=Clear["FactionalIteration`*"]
 	
 (* Test - End*)
 
@@ -309,7 +313,6 @@ SuperPower[x_,a_]:= Ackermann[x,a,2];
 SuperExp[a_,x_]:=Ackermann[a,x,2];
 Ackermann[a_,b_,1]:=Power[a,b];
 Ackermann[a_,0,n_]:=1;
-Inv[s_]:=InverseSeries[s];
 (* Ackermann - End*)
 
 
