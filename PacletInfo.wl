@@ -2,7 +2,7 @@
 
 PacletObject[
   <|
-    "Name" -> "DanielGeisler/FractionalIteration",
+    "Name" -> "DanielGeisler/Flow",
     "Description" -> "Supports fractional iteration and tetration",
     "Creator" -> "Daniel Geisler",
     "Version" -> "0.1.0",
@@ -15,8 +15,8 @@ PacletObject[
         "Root" -> "Kernel",
         "Context" -> {
           {
-            "DanielGeisler`FractionalIteration`",
-            "FractionalIteration.wl"
+            "DanielGeisler`Flow`",
+            "Flow.wl"
           }
         }
       },
