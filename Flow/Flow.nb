@@ -13,8 +13,9 @@ Cell["Flow", "Title",
  CellTags->{"Name", "TemplateCell", "Title", "TabNext"},
  CellID->863144461,ExpressionUUID->"dd67f7a0-ecd4-4285-8133-59ae469760a9"],
 
-Cell["One-line description explaining the function\[CloseCurlyQuote]s basic \
-purpose", "Text",
+Cell["\<\
+Provides the hyperbolic and parabolic flows of iterated maps.\
+\>", "Text",
  Deletable->False,
  CellEventActions->{Inherited, {"KeyDown", "\t"} :> Replace[SelectionMove[
        SelectedNotebook[], After, Cell]; NotebookFind[
@@ -22,6 +23,7 @@ purpose", "Text",
        WrapAround -> True], Blank[NotebookSelection] :> SelectionMove[
        SelectedNotebook[], All, CellContents, AutoScroll -> True]], 
    PassEventsDown -> False, PassEventsUp -> False},
+ CellChangeTimes->{{3.8741337362803745`*^9, 3.874133775000379*^9}},
  CellTags->{"DefaultContent", "Description", "TabNext", "TemplateCell"},
  CellID->660820806,ExpressionUUID->"f75baa58-c1b1-4441-a2f6-e86cfe0e6ec6"],
 
@@ -62,12 +64,12 @@ evaluated before creating the Examples section below.", "MoreInfoText"],
 Cell[BoxData[
  RowBox[{
   RowBox[{
-   RowBox[{"HyperbolicFlow", "[", 
-    RowBox[{"f_", ",", "t_", ",", "x_", ",", " ", "L_", ",", " ", 
-     RowBox[{"order_", ":", "4"}]}], "]"}], ":=", " ", 
+   RowBox[{"Flow", "[", 
+    RowBox[{"f_", ",", "t_", ",", "x_", ",", " ", "L", ",", " ", 
+     RowBox[{"order___", ":", "2"}]}], "]"}], ":=", " ", 
    RowBox[{"Module", "[", 
     RowBox[{
-     RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", "s", "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{
       RowBox[{
        RowBox[{"H", "[", "0", "]"}], "=", "L"}], ";", "\[IndentingNewLine]", 
@@ -123,95 +125,38 @@ Cell[BoxData[
         RowBox[{"{", 
          RowBox[{"max", ",", "2", ",", "order"}], "}"}]}], "]"}], ";", 
       "\[IndentingNewLine]", 
-      RowBox[{"Sum", "[", 
-       RowBox[{
+      RowBox[{"s", "=", 
+       RowBox[{"Sum", "[", 
         RowBox[{
-         RowBox[{"1", "/", 
-          RowBox[{"k", "!"}]}], " ", 
-         RowBox[{"H", "[", "k", "]"}], 
          RowBox[{
-          RowBox[{"(", 
-           RowBox[{"x", "-", "L"}], ")"}], "^", "k"}]}], ",", 
-        RowBox[{"{", 
-         RowBox[{"k", ",", "0", ",", "order"}], "}"}]}], "]"}]}]}], 
-    "\[IndentingNewLine]", "]"}]}], ";"}]], "Input",
- CellChangeTimes->{{3.8739641117811127`*^9, 3.873964113389773*^9}, 
-   3.873967629926158*^9, {3.8740216415010195`*^9, 3.8740216464131823`*^9}},
- CellTags->"DefaultContent",
- CellID->876320555,ExpressionUUID->"b3e0f718-ef9f-4a86-97d1-4285daa2d161"],
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{
-   RowBox[{"ParabolicFlow", "[", 
-    RowBox[{"f_", ",", "t_", ",", "x_", ",", " ", "L_", ",", " ", 
-     RowBox[{"order_", ":", "4"}]}], "]"}], ":=", " ", 
-   RowBox[{"Module", "[", 
-    RowBox[{
-     RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
-     RowBox[{
-      RowBox[{
-       RowBox[{"H", "[", "0", "]"}], "=", "L"}], ";", "\[IndentingNewLine]", 
-      RowBox[{
-       RowBox[{"H", "[", "1", "]"}], "=", "1"}], " ", ";", 
-      "\[IndentingNewLine]", 
-      RowBox[{"Do", "[", "\[IndentingNewLine]", 
-       RowBox[{
-        RowBox[{
-         RowBox[{"H", "[", "max", "]"}], "=", 
-         RowBox[{"First", "[", 
+          RowBox[{"1", "/", 
+           RowBox[{"k", "!"}]}], " ", 
+          RowBox[{"H", "[", "k", "]"}], 
           RowBox[{
-           RowBox[{"r", "[", "t", "]"}], "/.", 
-           RowBox[{"RSolve", "[", 
-            RowBox[{
-             RowBox[{"{", 
-              RowBox[{
-               RowBox[{
-                RowBox[{"r", "[", "0", "]"}], "==", "0"}], ",", 
-               RowBox[{
-                RowBox[{"r", "[", "t", "]"}], "==", " ", 
-                RowBox[{
-                 RowBox[{"Sum", "[", 
-                  RowBox[{
-                   RowBox[{
-                    RowBox[{
-                    RowBox[{
-                    RowBox[{"Derivative", "[", "k", "]"}], "[", "f", "]"}], 
-                    "[", "L", "]"}], 
-                    RowBox[{"BellY", "[", 
-                    RowBox[{"max", ",", "k", ",", 
-                    RowBox[{"Table", "[", 
-                    RowBox[{
-                    RowBox[{
-                    RowBox[{"H", "[", "j", "]"}], "/.", 
-                    RowBox[{"t", "->", 
-                    RowBox[{"t", "-", "1"}]}]}], ",", 
-                    RowBox[{"{", 
-                    RowBox[{"j", ",", "max"}], "}"}]}], "]"}]}], "]"}]}], ",", 
-                   RowBox[{"{", 
-                    RowBox[{"k", ",", "2", ",", "max"}], "}"}]}], "]"}], "+", 
-                 " ", 
-                 RowBox[{"r", "[", 
-                  RowBox[{"t", "-", "1"}], "]"}]}]}]}], "}"}], ",", 
-             RowBox[{"r", "[", "t", "]"}], ",", "t"}], "]"}]}], "]"}]}], ",", 
-        "\[IndentingNewLine]", 
-        RowBox[{"{", 
-         RowBox[{"max", ",", "2", ",", "order"}], "}"}]}], "]"}], ";", 
+           RowBox[{"(", 
+            RowBox[{"x", "-", "L"}], ")"}], "^", "k"}]}], ",", 
+         RowBox[{"{", 
+          RowBox[{"k", ",", "0", ",", "order"}], "}"}]}], "]"}]}], ";", 
       "\[IndentingNewLine]", 
-      RowBox[{"Sum", "[", 
+      RowBox[{"{", 
        RowBox[{
-        RowBox[{
-         RowBox[{"1", "/", 
-          RowBox[{"k", "!"}]}], " ", 
-         RowBox[{"H", "[", "k", "]"}], 
-         RowBox[{
-          RowBox[{"(", 
-           RowBox[{"x", "-", "L"}], ")"}], "^", "k"}]}], ",", 
         RowBox[{"{", 
-         RowBox[{"k", ",", "0", ",", "order"}], "}"}]}], "]"}]}]}], 
-    "\[IndentingNewLine]", "]"}]}], ";"}]], "Input",
- CellChangeTimes->{{3.874021671705141*^9, 3.8740216880890646`*^9}},
- CellID->201410717,ExpressionUUID->"3c9395c7-0984-4a2a-97f6-f6080771b013"]
+         RowBox[{"Hyperbolic", "->", "s"}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"Parabolic", "->", 
+          RowBox[{"Limit", "[", 
+           RowBox[{"s", ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"f", "'"}], "[", "L", "]"}], "->", "1"}], "}"}]}], 
+           "]"}]}], "}"}]}], "}"}]}]}], "\[IndentingNewLine]", "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.8739641117811127`*^9, 3.873964113389773*^9}, 
+   3.873967629926158*^9, {3.8740216415010195`*^9, 3.8740216464131823`*^9}, 
+   3.874116398948699*^9},
+ CellTags->"DefaultContent",
+ CellID->876320555,ExpressionUUID->"b3e0f718-ef9f-4a86-97d1-4285daa2d161"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -281,16 +226,38 @@ documentation pages for examples."}], "MoreInfoText"], Background ->
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{"MyFunction", "[", "arg", "]"}]], "UsageInputs",
+ RowBox[{"Flow", "[", 
+  RowBox[{"f", ",", "t", ",", "x", ",", " ", "L", ",", " ", "order"}], 
+  "]"}]], "UsageInputs",
+ CellChangeTimes->{{3.8741338027135334`*^9, 3.874133830856948*^9}},
  FontFamily->"Source Sans Pro",
  CellTags->{"DefaultContent", "TabNext"},
  CellID->67839508,ExpressionUUID->"4006f190-f344-4c68-9f89-5ec6d5b7f1fb"],
 
 Cell[TextData[{
- "explanation of what use of the argument ",
- StyleBox["arg", "TI"],
- " does."
+ StyleBox["f ",
+  FontSlant->"Italic"],
+ "-",
+ StyleBox[" ",
+  FontSlant->"Italic"],
+ "function to be iterated, ",
+ StyleBox["t",
+  FontSlant->"Italic"],
+ " - iterations, ",
+ StyleBox["x",
+  FontSlant->"Italic"],
+ " - function vavriable,",
+ " ",
+ StyleBox["L",
+  FontSlant->"Italic"],
+ " - fixed point,",
+ StyleBox[" order",
+  FontSlant->"Italic"],
+ " - order of series ."
 }], "UsageDescription",
+ CellChangeTimes->{{3.8741339760954986`*^9, 3.8741339849675035`*^9}, {
+  3.8741340402071657`*^9, 3.8741341382471333`*^9}, {3.874134172783102*^9, 
+  3.874134185735051*^9}},
  CellTags->{"DefaultContent", "TabNext"},
  CellID->746063541,ExpressionUUID->"b8dec115-eb31-48a8-a2f8-bea38c2b9abf"]
 }, Open  ]]
@@ -333,13 +300,40 @@ function, its development, and its usage.", "MoreInfoText"], Background ->
  CellTags->{"Details & Options", "Notes", "TemplateCellGroup"},
  CellID->447261062,ExpressionUUID->"ab5effdd-9bc8-44da-a4d7-420931f0e6d6"],
 
-Cell["Additional information about usage and options.", "Notes",
+Cell[TextData[{
+ "Returns a hyperbolic flow for ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["f", "t"], "[", "x", "]"}], TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "0109e574-44a3-4b59-86dd-53bb94322dc0"],
+ " where ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox[
+     RowBox[{
+      RowBox[{"f", "'"}], "[", "L", "]"}], "n"], "!=", "1"}], 
+   TraditionalForm]],ExpressionUUID->"019f4365-756a-47ef-85c5-baf699363287"],
+ "  and parabolic flows where ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{"f", "'"}], "[", "L", "]"}], "==", "1"}], TraditionalForm]],
+  ExpressionUUID->"9abdfd89-2096-4838-8df4-f6c9faec68e1"],
+ "."
+}], "Notes",
  CellEventActions->{Inherited, {"KeyDown", "\t"} :> Replace[SelectionMove[
        SelectedNotebook[], After, Cell]; NotebookFind[
        SelectedNotebook[], "TabNext", Next, CellTags, AutoScroll -> True, 
        WrapAround -> True], Blank[NotebookSelection] :> SelectionMove[
        SelectedNotebook[], All, CellContents, AutoScroll -> True]], 
    PassEventsDown -> False, PassEventsUp -> False},
+ CellChangeTimes->{{3.874134521069992*^9, 3.8741345350462904`*^9}, {
+  3.8741345700857134`*^9, 3.8741347267974257`*^9}, {3.8741347571893816`*^9, 
+  3.874134776327998*^9}, {3.8741348063327627`*^9, 3.8741348191170006`*^9}},
  CellTags->{"DefaultContent", "TabNext"},
  CellID->422531486,ExpressionUUID->"f9a6cf89-a5aa-425a-a5fe-a19bee2b0c6d"]
 }, Open  ]]
@@ -1773,6 +1767,7 @@ Cell["Additional information for the reviewer.", "Text",
 }, Open  ]]
 }, Open  ]]
 },
+WindowToolbars->"EditBar",
 WindowSize->{854.5, 443.},
 WindowMargins->{{0, Automatic}, {Automatic, 0}},
 TaggingRules->{
