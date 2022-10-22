@@ -87,25 +87,22 @@ Cell[BoxData[
       RowBox[{"Do", "[", "\[IndentingNewLine]", 
        RowBox[{
         RowBox[{
-         RowBox[{
-          RowBox[{"H", "[", "max", "]"}], "=", 
-          RowBox[{"FullSimplify", "[", 
-           RowBox[{
-            RowBox[{"First", "[", 
-             RowBox[{
-              RowBox[{"r", "[", "t", "]"}], "/.", 
-              RowBox[{"RSolve", "[", 
+         RowBox[{"H", "[", "max", "]"}], "=", 
+         RowBox[{"First", "[", 
+          RowBox[{
+           RowBox[{"r", "[", "t", "]"}], "/.", 
+           RowBox[{"RSolve", "[", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
                RowBox[{
-                RowBox[{"{", 
-                 RowBox[{
+                RowBox[{"r", "[", "0", "]"}], "==", "0"}], ",", 
+               RowBox[{
+                RowBox[{"r", "[", "t", "]"}], "==", " ", 
+                RowBox[{
+                 RowBox[{"Sum", "[", 
                   RowBox[{
-                   RowBox[{"r", "[", "0", "]"}], "==", "0"}], ",", 
-                  RowBox[{
-                   RowBox[{"r", "[", "t", "]"}], "==", " ", 
                    RowBox[{
-                    RowBox[{"Sum", "[", 
-                    RowBox[{
-                    RowBox[{
                     RowBox[{
                     RowBox[{
                     RowBox[{"Derivative", "[", "k", "]"}], "[", "f", "]"}], 
@@ -120,20 +117,15 @@ Cell[BoxData[
                     RowBox[{"t", "-", "1"}]}]}], ",", 
                     RowBox[{"{", 
                     RowBox[{"j", ",", "max"}], "}"}]}], "]"}]}], "]"}]}], ",", 
-                    RowBox[{"{", 
+                   RowBox[{"{", 
                     RowBox[{"k", ",", "2", ",", "max"}], "}"}]}], "]"}], "+", 
-                    " ", 
-                    RowBox[{
-                    RowBox[{
-                    RowBox[{"f", "'"}], "[", "L", "]"}], " ", 
-                    RowBox[{"r", "[", 
-                    RowBox[{"t", "-", "1"}], "]"}]}]}]}]}], "}"}], ",", 
-                RowBox[{"r", "[", "t", "]"}], ",", "t"}], "]"}]}], "]"}], ",", 
-            RowBox[{"TimeConstraint", "\[Rule]", "\[Infinity]"}]}], "]"}]}], 
-         ";", 
-         RowBox[{"Print", "[", 
-          RowBox[{"max", ",", "\"\< - \>\"", ",", 
-           RowBox[{"TimeUsed", "[", "]"}]}], "]"}]}], ",", 
+                 " ", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"f", "'"}], "[", "L", "]"}], " ", 
+                  RowBox[{"r", "[", 
+                   RowBox[{"t", "-", "1"}], "]"}]}]}]}]}], "}"}], ",", 
+             RowBox[{"r", "[", "t", "]"}], ",", "t"}], "]"}]}], "]"}]}], ",", 
         "\[IndentingNewLine]", 
         RowBox[{"{", 
          RowBox[{"max", ",", "2", ",", "order"}], "}"}]}], "]"}], ";", 
@@ -158,13 +150,7 @@ Cell[BoxData[
    3.8742193014986086`*^9, 3.874219302290002*^9}, {3.874277276339757*^9, 
    3.8742773530255175`*^9}, {3.8742823046192317`*^9, 
    3.8742823053632326`*^9}, {3.8742879947012186`*^9, 3.8742880628917646`*^9}, 
-<<<<<<< Updated upstream
    3.874293705713896*^9},
-=======
-   3.874293705713896*^9, {3.8743636785398455`*^9, 3.874363719751223*^9}, {
-   3.8743689520199447`*^9, 3.8743689823954906`*^9}, {3.8743690642636847`*^9, 
-   3.8743691101741133`*^9}, {3.8743691478225727`*^9, 3.8743691632153387`*^9}},
->>>>>>> Stashed changes
  CellTags->"DefaultContent",
  CellLabel->"In[1]:=",
  CellID->876320555,ExpressionUUID->"b3e0f718-ef9f-4a86-97d1-4285daa2d161"]
@@ -237,18 +223,10 @@ documentation pages for examples."}], "MoreInfoText"], Background ->
 Cell[BoxData[
  RowBox[{
   RowBox[{"Flow", "::", "usage"}], " ", "=", " ", 
-<<<<<<< Updated upstream
   "\"\<f - function to be iterated, t - iterations, x - function vavriable, L \
 - fixed point, order - order of series \>\""}]], "UsageInputs",
  TaggingRules->{},
  CellChangeTimes->{{3.8742969088288*^9, 3.8742969150921793`*^9}},
-=======
-  "\"\<f - function to be iterated, t - iterations, x - function variable, L \
-- fixed point, order - order of series \>\""}]], "UsageInputs",
- TaggingRules->{},
- CellChangeTimes->{{3.8742969088288*^9, 3.8742969150921793`*^9}, 
-   3.874363459941346*^9},
->>>>>>> Stashed changes
  FontFamily->"Source Sans Pro",
  CellID->307744778,ExpressionUUID->"24c7aa93-ef58-4c1b-9187-b77c5f3ed89b"]
 }, Open  ]],
@@ -2370,20 +2348,11 @@ Cell["Compute and save the flow for future reference.", "Text",
  CellTags->{"DefaultContent", "TabNext"},
  CellID->352943564,ExpressionUUID->"928c85a7-39fe-4485-9e4b-9c2f2f569a93"],
 
-<<<<<<< Updated upstream
-=======
-Cell[CellGroupData[{
-
->>>>>>> Stashed changes
 Cell[BoxData[{
  RowBox[{
   RowBox[{"flow", "=", 
    RowBox[{"Flow", "[", 
-<<<<<<< Updated upstream
     RowBox[{"f", ",", "t", ",", "x", ",", " ", "L", ",", " ", "10"}], "]"}]}],
-=======
-    RowBox[{"f", ",", "t", ",", "x", ",", " ", "L", ",", " ", "20"}], "]"}]}],
->>>>>>> Stashed changes
    ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"hyperFile", "=", 
@@ -2397,7 +2366,6 @@ Cell[BoxData[{
  CellChangeTimes->{{3.8741432572879677`*^9, 3.874143278287025*^9}, 
    3.874143333507168*^9, {3.874143366296117*^9, 3.8741433680248404`*^9}, {
    3.874143686362316*^9, 3.87414368718299*^9}, {3.8742760693226027`*^9, 
-<<<<<<< Updated upstream
    3.874276089919089*^9}, {3.8742806124248743`*^9, 3.874280612585874*^9}},
  CellLabel->"In[2]:=",
  CellID->302049032,ExpressionUUID->"db69f0ed-7f3a-4b8b-b9d0-66a7d575bbee"],
@@ -2584,304 +2552,6 @@ Cell[BoxData[
 
 Cell[BoxData[
  InterpretationBox[
-=======
-   3.874276089919089*^9}, {3.8742806124248743`*^9, 3.874280612585874*^9}, 
-   3.8743636586060085`*^9},
- CellLabel->"In[2]:=",
- CellID->302049032,ExpressionUUID->"db69f0ed-7f3a-4b8b-b9d0-66a7d575bbee"],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{
-  "2", "\[InvisibleSpace]", "\<\" - \"\>", "\[InvisibleSpace]", "1.032`"}],
-  SequenceForm[2, " - ", 1.032],
-  Editable->False]], "Print",
- CellChangeTimes->{3.8743637614050236`*^9, 3.874369228267947*^9},
- CellLabel->"During evaluation of In[2]:=",
- CellID->198564526,ExpressionUUID->"39609c9e-7b74-4cc2-8adc-38acad932b58"],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{
-  "3", "\[InvisibleSpace]", "\<\" - \"\>", "\[InvisibleSpace]", 
-   "1.2969999999999997`"}],
-  SequenceForm[3, " - ", 1.2969999999999997`],
-  Editable->False]], "Print",
- CellChangeTimes->{3.8743637614050236`*^9, 3.874369228538947*^9},
- CellLabel->"During evaluation of In[2]:=",
- CellID->73917521,ExpressionUUID->"2bce4aad-59a9-4524-b99e-34eeeb371671"],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{
-  "4", "\[InvisibleSpace]", "\<\" - \"\>", "\[InvisibleSpace]", 
-   "3.4999999999999996`"}],
-  SequenceForm[4, " - ", 3.4999999999999996`],
-  Editable->False]], "Print",
- CellChangeTimes->{3.8743637614050236`*^9, 3.874369230817131*^9},
- CellLabel->"During evaluation of In[2]:=",
- CellID->520828355,ExpressionUUID->"da6796b0-788b-45d1-9940-b09a93ee0b0c"],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{
-  "5", "\[InvisibleSpace]", "\<\" - \"\>", "\[InvisibleSpace]", 
-   "78.46900000000001`"}],
-  SequenceForm[5, " - ", 78.46900000000001],
-  Editable->False]], "Print",
- CellChangeTimes->{3.8743637614050236`*^9, 3.874369308325347*^9},
- CellLabel->"During evaluation of In[2]:=",
- CellID->193463665,ExpressionUUID->"7a21ec31-2f8e-4042-beb8-e91968ec645a"],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{
-  "6", "\[InvisibleSpace]", "\<\" - \"\>", "\[InvisibleSpace]", "714.063`"}],
-  SequenceForm[6, " - ", 714.063],
-  Editable->False]], "Print",
- CellChangeTimes->{3.8743637614050236`*^9, 3.8743699888570175`*^9},
- CellLabel->"During evaluation of In[2]:=",
- CellID->78272798,ExpressionUUID->"e4da251a-8eb2-49f9-b5bc-b17cc3ff7918"],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{
-  "7", "\[InvisibleSpace]", "\<\" - \"\>", "\[InvisibleSpace]", "780.5`"}],
-  SequenceForm[7, " - ", 780.5],
-  Editable->False]], "Print",
- CellChangeTimes->{3.8743637614050236`*^9, 3.8743700563887167`*^9},
- CellLabel->"During evaluation of In[2]:=",
- CellID->40210198,ExpressionUUID->"adeb9e39-7283-4b84-8d78-e8fbd042b830"],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{
-  "8", "\[InvisibleSpace]", "\<\" - \"\>", "\[InvisibleSpace]", "1134.766`"}],
-  SequenceForm[8, " - ", 1134.766],
-  Editable->False]], "Print",
- CellChangeTimes->{3.8743637614050236`*^9, 3.8743704204544253`*^9},
- CellLabel->"During evaluation of In[2]:=",
- CellID->582315181,ExpressionUUID->"b0edb169-da75-43e5-9c72-b5b9a30c6b28"],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{
-  "9", "\[InvisibleSpace]", "\<\" - \"\>", "\[InvisibleSpace]", "2207.25`"}],
-  SequenceForm[9, " - ", 2207.25],
-  Editable->False]], "Print",
- CellChangeTimes->{3.8743637614050236`*^9, 3.874371525353307*^9},
- CellLabel->"During evaluation of In[2]:=",
- CellID->7151307,ExpressionUUID->"603685aa-ef7d-44ff-bd6b-8cfb0e7bb689"],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{
-  "10", "\[InvisibleSpace]", "\<\" - \"\>", "\[InvisibleSpace]", "5314.875`"}],
-  SequenceForm[10, " - ", 5314.875],
-  Editable->False]], "Print",
- CellChangeTimes->{3.8743637614050236`*^9, 3.8743747687927923`*^9},
- CellLabel->"During evaluation of In[2]:=",
- CellID->39375997,ExpressionUUID->"2ab7c513-e6bc-450d-a372-c840db36325c"]
-}, Open  ]],
-
-Cell[BoxData[
- TemplateBox[{
-  "Simplify", "time", 
-   "\"Time spent on a transformation exceeded \
-\\!\\(\\*RowBox[{\\\"300.`\\\"}]\\) seconds, and the transformation was \
-aborted. Increasing the value of TimeConstraint option may improve the result \
-of simplification.\"", 2, 2, 1, 27847775305999819441, "Local"},
-  "MessageTemplate"]], "Message", "MSG",
- CellChangeTimes->{3.8743686494490585`*^9, 3.8743765473172474`*^9},
- CellLabel->"During evaluation of In[2]:=",
- CellID->101695608,ExpressionUUID->"4d262d09-6c65-4cb0-8a90-8423ffb089b7"]
-}, Open  ]],
-
-Cell["Compute and save the flow for future reference.", "Text",
- TaggingRules->{},
- CellEventActions->{Inherited, {"KeyDown", "\t"} :> Replace[SelectionMove[
-       SelectedNotebook[], After, Cell]; NotebookFind[
-       SelectedNotebook[], "TabNext", Next, CellTags, AutoScroll -> True, 
-       WrapAround -> True], Blank[NotebookSelection] :> SelectionMove[
-       SelectedNotebook[], All, CellContents, AutoScroll -> True]], 
-   PassEventsDown -> False, PassEventsUp -> False},
- CellChangeTimes->{{3.8742761302923794`*^9, 3.874276156361318*^9}},
- CellTags->{"DefaultContent", "TabNext"},
- CellID->463843425,ExpressionUUID->"19607d75-b1c8-4be3-af92-9446e24936b6"],
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{
-   RowBox[{"Show", " ", 
-    RowBox[{
-     SuperscriptBox["f", "a"], "[", 
-     RowBox[{
-      SuperscriptBox["f", "b"], "[", "z", "]"}], "]"}]}], "-", 
-   RowBox[{
-    SuperscriptBox["f", 
-     RowBox[{"a", "+", "b"}]], "[", "z", "]"}]}], "\[Equal]", " ", 
-  "0"}]], "Text",
- TaggingRules->{},
- CellChangeTimes->{{3.8742762029399014`*^9, 3.8742762570872793`*^9}, {
-   3.8742762942530017`*^9, 3.8742763138301945`*^9}, 3.874296545558635*^9},
- CellID->288252490,ExpressionUUID->"d5761786-859f-4c7b-9999-0b902c9d56b2"],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox["A",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["flow",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["on",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["a",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["set",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["X",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["is",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["a",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["group",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["action",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["of",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["the",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["additive",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["group",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["of",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["real",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["numbers",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  StyleBox["on",
-   FontSlant->"Italic"], 
-  StyleBox[" ",
-   FontSlant->"Italic"], 
-  RowBox[{
-   StyleBox["X",
-    FontSlant->"Italic"], ".", 
-   RowBox[{"-", "Wikipedia"}]}], " ", 
-  ButtonBox["Flow",
-   BaseStyle->"Hyperlink",
-   ButtonData->{
-     URL["https://en.wikipedia.org/wiki/Flow_(mathematics)#Formal_definition"]\
-, None},
-   ButtonNote->
-    "https://en.wikipedia.org/wiki/Flow_(mathematics)#Formal_definition"], 
-  " ", "article"}]], "Text",
- TaggingRules->{},
- CellChangeTimes->{{3.8742766638800783`*^9, 3.8742766764163322`*^9}, {
-  3.874276878195201*^9, 3.87427688645203*^9}},
- CellID->589792304,ExpressionUUID->"8f06e32c-dd97-40f0-b76a-baa1adb3a047"],
-
-Cell[BoxData[{
- RowBox[{
-  RowBox[{
-   RowBox[{"Get", "[", "hyperFile", "]"}], "/.", 
-   RowBox[{"L", "->", "0"}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"fa", "=", 
-   RowBox[{"flow", "/.", 
-    RowBox[{"t", "->", "a"}]}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"fb", "=", 
-   RowBox[{"flow", "/.", 
-    RowBox[{"t", "->", "b"}]}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"fab", "=", 
-   RowBox[{"flow", "/.", 
-    RowBox[{"t", "->", 
-     RowBox[{"(", 
-      RowBox[{"a", "+", "b"}], ")"}]}]}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"fdiff", "=", 
-   RowBox[{
-    RowBox[{"(", 
-     RowBox[{"fa", "/.", 
-      RowBox[{"x", "->", "fb"}]}], ")"}], "-", "fab"}]}], ";"}]}], "Input",
- TaggingRules->{},
- CellChangeTimes->{{3.8741718891198206`*^9, 3.8741719040573435`*^9}, {
-   3.8741719469539323`*^9, 3.8741719523256164`*^9}, {3.8742720227738595`*^9, 
-   3.8742722077637663`*^9}, {3.874272258710179*^9, 3.8742722665653086`*^9}, {
-   3.8742723300465574`*^9, 3.8742723370970273`*^9}, {3.8742734895039115`*^9, 
-   3.8742735107021446`*^9}, {3.8742735954042416`*^9, 3.874273603524449*^9}, 
-   3.8742757350139675`*^9, 3.8742757896322966`*^9, 3.8742806670649014`*^9},
- CellLabel->"In[16]:=",
- CellID->764713369,ExpressionUUID->"e7ac545d-b552-4eb8-87c4-1089fc396af7"],
-
-Cell[BoxData[
- RowBox[{"Proof", " ", "that", " ", "the", " ", "first", " ", "nine", " ", 
-  "terms", " ", "are", " ", "a", " ", 
-  RowBox[{"flow", "."}]}]], "Text",
- TaggingRules->{},
- CellChangeTimes->{{3.8742766638800783`*^9, 3.8742766764163322`*^9}, {
-  3.874276878195201*^9, 3.87427688645203*^9}, {3.874277687541589*^9, 
-  3.8742777341250277`*^9}},
- CellID->880666105,ExpressionUUID->"a3a832c4-5778-4ddd-8ac5-a4cc7fd95621"],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"Series", "[", 
-  RowBox[{"fdiff", ",", 
-   RowBox[{"{", 
-    RowBox[{"x", ",", "0", ",", "9"}], "}"}]}], "]"}]], "Input",
- TaggingRules->{},
- CellChangeTimes->{
-  3.874273519615746*^9, {3.8742735849023824`*^9, 3.8742735883134255`*^9}, 
-   3.8742736388167295`*^9, 3.8742737161029787`*^9, 3.874273780156708*^9, {
-   3.8742752534594336`*^9, 3.874275253593375*^9}, 3.8742753835906267`*^9},
- CellLabel->"In[22]:=",
- CellID->239713529,ExpressionUUID->"a81ddf56-6e31-4e1a-89e9-66c7e92038bb"],
-
-Cell[BoxData[
- InterpretationBox[
->>>>>>> Stashed changes
   SuperscriptBox[
    RowBox[{"O", "[", "x", "]"}], "10"],
   SeriesData[$CellContext`x, 0, {}, 10, 10, 1],
@@ -3612,13 +3282,8 @@ Cell["Additional information for the reviewer.", "Text",
 }, Open  ]]
 },
 WindowToolbars->"EditBar",
-<<<<<<< Updated upstream
 WindowSize->{854.5, 443.},
 WindowMargins->{{0, Automatic}, {Automatic, 0}},
-=======
-WindowSize->{855, 456},
-WindowMargins->{{-1123.8, Automatic}, {-7.399999999999977, Automatic}},
->>>>>>> Stashed changes
 DockedCells->{
   Cell[
    BoxData[
@@ -3633,7 +3298,6 @@ DockedCells->{
    CellFrameMargins -> {{0, 0}, {2, 2}}, CellFrame -> {{0, 0}, {1, 0}}, 
    CacheGraphics -> False, CellOpen -> Dynamic[
      CurrentValue[
-<<<<<<< Updated upstream
       EvaluationNotebook[], {TaggingRules, "ToolsOpen"}, True]]], 
   Cell[
    BoxData[
@@ -16736,9 +16400,6 @@ gXFDvEKYodYi1ih1hV7BBrFTumNYgdoiaxEzhFsTMBnhrEjrmWyVpfy2TdLtc1PFur6dYO88KFd412\
      FontSize -> 12, FontColor -> GrayLevel[0.25], StripOnInput -> False]], 
    "StripeCell", CellFrameMargins -> {{20, 5}, {2, 2}}, 
    CellFrame -> {{0, 0}, {1, 0}}, CellFrameColor -> GrayLevel[0.75]]},
-=======
-      EvaluationNotebook[], {TaggingRules, "ToolsOpen"}, True]]]},
->>>>>>> Stashed changes
 TaggingRules->{
  "ResourceType" -> "Function", "ResourceCreateNotebook" -> True, 
   "TemplateVersion" -> "1.6.4", "CreationTimestamp" -> 
